@@ -4,6 +4,8 @@
 #include <QString>
 #include <QStringList>
 #include <QStandardPaths>
+#include <QMap>
+#include <QDebug>
 
 class settings
 {
@@ -13,7 +15,8 @@ public:
     QString domain;
     QString launcherName;
     QString globalPath;
-    QStringList serversList;
+    QString pathOnSite;
+    QMap<int, QStringList> serversList;
 };
 
 #endif // SETTINGS_H

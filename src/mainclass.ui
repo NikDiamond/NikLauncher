@@ -184,13 +184,7 @@ QLabel{color:#fff;font-weight:bold;font-size: 16px;}</string>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox">
-          <item>
-           <property name="text">
-            <string>Vanilla</string>
-           </property>
-          </item>
-         </widget>
+         <widget class="QComboBox" name="comboBox"/>
         </item>
        </layout>
       </item>

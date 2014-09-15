@@ -11,7 +11,7 @@ void connecter::doConnect(QString params){
 
     manager = new QNetworkAccessManager;
 
-    QNetworkRequest *request = new QNetworkRequest(QUrl("http://"+sett.domain+"/"+url));
+    QNetworkRequest *request = new QNetworkRequest(QUrl("http://"+sett.domain+"/"+sett.pathOnSite+"/"+url));
     request->setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request->setHeader(QNetworkRequest::UserAgentHeader, sett.clientVer);
 

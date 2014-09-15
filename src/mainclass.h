@@ -10,6 +10,8 @@
 #include <QNetworkReply>
 #include <QMouseEvent>
 #include <QStandardPaths>
+#include <QMap>
+#include <QDir>
 #include "settings.h"
 
 namespace Ui {
@@ -29,6 +31,8 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *);
+    void updateServers();
+    void checkPath(QString path = "");
 private slots:
     void on_toGame_clicked();
     void startUserParsing(QNetworkReply *rep);
@@ -38,6 +42,12 @@ private slots:
     void on_toClose_clicked();
 
     void serversWrite(QNetworkReply *rep);
+
+    void downloadError();
+
+    void downloadProgress(qint64 r, qint64 t);
+
+    void clientDownloaded();
 private:
     Ui::MainClass *ui;
     QPoint mpos;

@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     connecter.cpp \
     reg.cpp \
     mdparser.cpp \
-    settings.cpp
+    settings.cpp \
+    downloader.cpp
 
 HEADERS  += mainclass.h \
     connecter.h \
     reg.h \
     mdparser.h \
-    settings.h
+    settings.h \
+    downloader.h
 
 FORMS    += mainclass.ui \
     reg.ui
