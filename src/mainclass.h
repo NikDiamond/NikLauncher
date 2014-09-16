@@ -12,6 +12,7 @@
 #include <QStandardPaths>
 #include <QMap>
 #include <QDir>
+#include <QByteArray>
 #include "settings.h"
 
 namespace Ui {
@@ -33,6 +34,10 @@ public:
     void mouseReleaseEvent(QMouseEvent *);
     void updateServers();
     void checkPath(QString path = "");
+    void getServers();
+    void extract(QString p, QString outP);
+    void startGame();
+    void uiEnabled(bool stat);
 private slots:
     void on_toGame_clicked();
     void startUserParsing(QNetworkReply *rep);
@@ -48,10 +53,14 @@ private slots:
     void downloadProgress(qint64 r, qint64 t);
 
     void clientDownloaded();
+
 private:
     Ui::MainClass *ui;
     QPoint mpos;
     settings sett;
+
+    QString serverChoosed;
+    QString clientFilePath;
 };
 
 #endif // MAINCLASS_H

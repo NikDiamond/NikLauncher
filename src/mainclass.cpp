@@ -9,18 +9,42 @@ MainClass::MainClass(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainClass)
 {
-    connecter *getServersConnect = new connecter("servers.php");
-    getServersConnect->doConnect();
-    connect(getServersConnect, SIGNAL(ready(QNetworkReply*)), this, SLOT(serversWrite(QNetworkReply*)));
-
     ui->setupUi(this);
     setUi();
+
+    updateServers();
+    getServers();
     checkPath();
 }
 
 MainClass::~MainClass()
 {delete ui;}
 
+void MainClass::getServers(){
+    connecter *getServersConnect = new connecter("servers.php");
+    getServersConnect->doConnect();
+    connect(getServersConnect, SIGNAL(ready(QNetworkReply*)), this, SLOT(serversWrite(QNetworkReply*)));
+}
+
+void MainClass::extract(QString p, QString outP)
+{
+    QZipReader *reader = new QZipReader(p);
+    reader->extractAll(outP);
+}
+
+void MainClass::startGame()
+{
+    //Запуск игры
+    status("Запуск игры...");
+}
+
+void MainClass::uiEnabled(bool stat)
+{
+    qDebug() << "Ui switched to " << stat;
+    ui->toGame->setEnabled(stat);
+    ui->toReg->setEnabled(stat);
+    ui->comboBox->setEnabled(stat);
+}
 void MainClass::updateServers(){
     ui->comboBox->clear();
     for(int i=0;i<sett.serversList.count();i++){
@@ -46,7 +70,6 @@ void MainClass::setUi(){
     pal.setBrush(QPalette::Window, QBrush(QPixmap( ":/img/images/mainBack.png")));
     setPalette(pal);
     setWindowFlags(Qt::FramelessWindowHint);
-    updateServers();
 
     connect(ui->loginField, SIGNAL(returnPressed()), ui->toGame, SLOT(click()));
     connect(ui->passField, SIGNAL(returnPressed()), ui->toGame, SLOT(click()));
@@ -60,11 +83,10 @@ void MainClass::mousePressEvent(QMouseEvent *event)
 
 void MainClass::mouseMoveEvent(QMouseEvent *event)
 {
-    if (mpos.x() >= 0 && event->buttons() && Qt::LeftButton)
+    if (mpos.x() >= 0 && mpos.y() <= 50 && event->buttons() && Qt::LeftButton)
     {
         QPoint diff = event->pos() - mpos;
         QPoint newpos = this->pos() + diff;
-
         this->move(newpos);
     }
 }
@@ -100,6 +122,7 @@ void MainClass::serversWrite(QNetworkReply *rep){
         updateServers();
     }else{
         qDebug() << "Server is unavailable.";
+        status("Сервер недоступен!");
     }
 }
 
@@ -110,6 +133,9 @@ void MainClass::downloadError()
 
 void MainClass::downloadProgress(qint64 r, qint64 t)
 {
+    ui->downProgress->setMaximum(t);
+    ui->downProgress->setValue(r);
+
     QString received = QString::number(r/1024);
     QString total = QString::number(t/1024);
 
@@ -119,15 +145,19 @@ void MainClass::downloadProgress(qint64 r, qint64 t)
 void MainClass::clientDownloaded()
 {
     status("Клиент скачан!");
+    startGame();
 }
+
 
 void MainClass::on_toGame_clicked()
 {
     QString login = ui->loginField->text().simplified();
     QString pass = ui->passField->text().simplified();
+
     if(login.length()<6 || login.length()>15){status("Неверный логин."); return;}
     if(pass.length()<6){status("Неверный пароль."); return;}
 
+    uiEnabled(false);
     status("Загрузка...");
     connecter *authConn = new connecter("auth.php");
     authConn->doConnect("act=auth&login="+login+"&password="+mdparser::parse(pass));
@@ -140,25 +170,34 @@ void MainClass::startUserParsing(QNetworkReply *rep)
     qDebug() << rp;
 
     if(rp.contains("<>")){
-        QString serverChoosed = ui->comboBox->currentText();
-        QString fileUrl = "clients/" + serverChoosed + "/" + serverChoosed + ".zip";
-        QString filePath = "clients/" + serverChoosed + "/" + serverChoosed + ".zip";
+        serverChoosed = ui->comboBox->currentText();
 
         status("Поиск клиента...");
-        checkPath("clients");
-        checkPath("clients/" + serverChoosed);
+        checkPath();
+        checkPath("/" + serverChoosed);
+        QFile *chkFile = new QFile(sett.globalPath + serverChoosed + "/conf.txt");
+        if(!chkFile->exists()){//ДОДЕЛАТЬ ПРОВЕРКУ
+            chkFile->close();
+            chkFile->deleteLater();
 
-        QFile clientFile(filePath);
-        if(!clientFile.exists()){
-            downloader *downloadClient = new downloader(fileUrl, filePath);
+            status("Скачивание клиента...");
+            downloader *downClient = new downloader(serverChoosed);
+            QStringList list;
+            list << "bin/minecraft.jar";
+            list << "config.zip";
+            list << "bin/assets.zip";
 
-            connect(downloadClient, SIGNAL(downError()), this, SLOT(downloadError()));
-            connect(downloadClient, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
-            connect(downloadClient, SIGNAL(finished()), this, SLOT(clientDownloaded()));
+            downClient->append(list);
+            connect(downClient, SIGNAL(finished()), this, SLOT(clientDownloaded()));
+            connect(downClient, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
         }else{
-            status("Клиент найден, запуск игры...");
+            //Запуск клиента
+            chkFile->close();
+            chkFile->deleteLater();
+            startGame();
         }
     }else{
+        uiEnabled(true);
         status(rp);
     }
 }
@@ -166,9 +205,9 @@ void MainClass::startUserParsing(QNetworkReply *rep)
 void MainClass::on_toReg_clicked()
 {
     reg *regForm = new reg(this);
-    regForm->setGeometry(-1,49,0,0);
-    regForm->setMaximumSize(width()+1,height()-49);
-    regForm->setMinimumSize(width()+1,height()-49);
+    regForm->setGeometry(10,70,0,0);
+    regForm->setMaximumSize(480,420);
+    regForm->setMinimumSize(480,420);
     regForm->show();
     regForm->setUi();
 }

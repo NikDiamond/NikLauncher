@@ -13,7 +13,7 @@ if($app != true) die('403 Forbid_dbden');
 	$password_db = 'pass';
 	$session_db = 'session';
 	
-	$version = '0.1';
+	$version = '0.01';
 	if($_SERVER['HTTP_USER_AGENT'] != $version) die("wrongClientVersion");
 
 	$db = @mysql_connect($host,$user,$pass) or die('Ошибка базы данных: connect.php'); //Подключение к базе

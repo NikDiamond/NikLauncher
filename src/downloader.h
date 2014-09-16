@@ -9,25 +9,46 @@
 #include <QNetworkRequest>
 #include <QByteArray>
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QQueue>
+#include <QTime>
+#include <QTimer>
 #include "settings.h"
+#include <private/qzipreader_p.h>
+#include <private/qzipwriter_p.h>
 
 class downloader : public QObject
 {
     Q_OBJECT
 public:
-    explicit downloader(QString u, QString p, QObject *parent = 0);
+    explicit downloader(QString sc, QObject *parent = 0);
     ~downloader();
+
+    void append(const QUrl &url);
+    void append(const QStringList &urlList);
 private:
     QUrl url;
     QString filePath;
-    QNetworkAccessManager *manager;
-    QNetworkReply *reply;
-    QFile *file;
     settings sett;
+    QFile *file;
+    QString serverChoosed;
+
+    int count;
+    QMap<int,QString> paths;
+
+    QNetworkAccessManager *manager;
+    QNetworkReply *currentDownload;
+    QQueue<QUrl> downloadQueue;
+    QTime downloadTime;
+
+    int downloadedCount;
+    int totalCount;
 private slots:
-    void tReadyRead();
-    void tdownloadProgress(qint64 rec, qint64 tot);
-    void tFinished();
+    void tstartNextDownload();
+    void tdownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void tdownloadFinished();
+    void tdownloadReadyRead();
 signals:
     void downError();
     void downloadProgress(qint64, qint64);

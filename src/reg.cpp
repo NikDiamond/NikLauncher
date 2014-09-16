@@ -19,7 +19,7 @@ void reg::setUi()
 {
     setLayout(ui->regLayout);
     ui->regWrap->setObjectName("regWindow");
-    ui->regWrap->setStyleSheet("#regWindow{background-image: url(:/img/images/regBack.png);}");
+    ui->regWrap->setStyleSheet("#regWindow{background: transparent;}");
     ui->regWrap->setMaximumSize(maximumWidth(),maximumHeight());
     ui->regWrap->setMinimumSize(maximumWidth(),maximumHeight());
 
