@@ -1,8 +1,10 @@
 #include "mainclass.h"
 #include "connecter.h"
 #include "downloader.h"
+#include "checker.h"
 #include "mdparser.h"
 #include "ui_mainclass.h"
+#include "minecraft.h"
 #include "reg.h"
 
 MainClass::MainClass(QWidget *parent) :
@@ -36,6 +38,8 @@ void MainClass::startGame()
 {
     //Запуск игры
     status("Запуск игры...");
+    minecraft *game = new minecraft(serverChoosed, login, pass, access, serverIp, serverPort);
+    game->launch();
 }
 
 void MainClass::uiEnabled(bool stat)
@@ -126,20 +130,62 @@ void MainClass::serversWrite(QNetworkReply *rep){
     }
 }
 
+void MainClass::checkFiles(QNetworkReply *rep)
+{
+    filesList = rep->readAll();
+    //check if download needable
+    status("Проверка файлов...");
+    checker *chckFiles = new checker(serverChoosed, filesList);
+    connect(chckFiles, SIGNAL(finished(QString)), this, SLOT(downloadClient(QString)));
+}
+
+void MainClass::downloadClient(QString newList)
+{
+    filesList = newList;
+    qDebug() << filesList;
+    totalDownSize = 0;
+
+    connecter *connT = new connecter("launcher.php");
+    connT->doConnect("act=filesSize&server=" + serverChoosed + "&files="+filesList);
+    connect(connT, SIGNAL(ready(QNetworkReply*)), this, SLOT(downloadStart(QNetworkReply*)));
+}
+
+void MainClass::downloadStart(QNetworkReply *repl)
+{
+    status("Скачивание клиента...");
+    totalDownSize = repl->readAll().toLongLong();
+    qDebug() << "Total size: " << totalDownSize;
+    QStringList list = filesList.simplified().split(",");
+
+    downloader *downClient = new downloader(serverChoosed);
+    downClient->append(list);
+
+    prevR = 0;
+    connect(downClient, SIGNAL(finished()), this, SLOT(clientDownloaded()));
+    connect(downClient, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64)));
+}
+
 void MainClass::downloadError()
 {
     status("Ошибка загрузки!");
 }
 
-void MainClass::downloadProgress(qint64 r, qint64 t)
+void MainClass::downloadProgress(qint64 r)
 {
-    ui->downProgress->setMaximum(t);
-    ui->downProgress->setValue(r);
+    qint64 plus = r-prevR;
+    if(r < prevR)
+        plus = r;
+    qint64 newVal = plus + ui->downProgress->value();
 
-    QString received = QString::number(r/1024);
-    QString total = QString::number(t/1024);
+    QString received = QString::number(newVal/1024);
+    QString total = QString::number(totalDownSize/1024);
 
-    status(received+" Кб / "+total+" Кб");
+    ui->downProgress->setMaximum(totalDownSize);
+    ui->downProgress->setValue(newVal);
+
+    status(received.left(received.indexOf(received.right(3))) + " " + received.right(3) +" / "+ total.left(total.indexOf(total.right(3))) + " " + total.right(3) +" KB");
+
+    prevR = r;
 }
 
 void MainClass::clientDownloaded()
@@ -147,7 +193,6 @@ void MainClass::clientDownloaded()
     status("Клиент скачан!");
     startGame();
 }
-
 
 void MainClass::on_toGame_clicked()
 {
@@ -169,33 +214,35 @@ void MainClass::startUserParsing(QNetworkReply *rep)
     QString rp = rep->readAll();
     qDebug() << rp;
 
+    QStringList loginData = rp.split("<>");
+    login = loginData[1];
+    access = loginData[2];
+    pass = loginData[0];
+
     if(rp.contains("<>")){
         serverChoosed = ui->comboBox->currentText();
 
+        QStringList serverNow;
+        for(int i=0;i<sett.serversList.count();i++){
+            if(sett.serversList[i][0] == serverChoosed){
+                serverNow = sett.serversList[i];
+            }
+        }
+        if(serverNow.count() == 0){
+            status("Ошибка выбора сервера");
+            return;
+        }
+        serverIp = serverNow[1];
+        serverPort = serverNow[2];
+
         status("Поиск клиента...");
         checkPath();
-        checkPath("/" + serverChoosed);
-        QFile *chkFile = new QFile(sett.globalPath + serverChoosed + "/conf.txt");
-        if(!chkFile->exists()){//ДОДЕЛАТЬ ПРОВЕРКУ
-            chkFile->close();
-            chkFile->deleteLater();
+        checkPath("/" + serverChoosed);;
 
-            status("Скачивание клиента...");
-            downloader *downClient = new downloader(serverChoosed);
-            QStringList list;
-            list << "bin/minecraft.jar";
-            list << "config.zip";
-            list << "bin/assets.zip";
-
-            downClient->append(list);
-            connect(downClient, SIGNAL(finished()), this, SLOT(clientDownloaded()));
-            connect(downClient, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64,qint64)));
-        }else{
-            //Запуск клиента
-            chkFile->close();
-            chkFile->deleteLater();
-            startGame();
-        }
+        connecter *getFilesList = new connecter("launcher.php");
+        getFilesList->doConnect("act=filesList&server="+serverChoosed);
+        connect(getFilesList, SIGNAL(ready(QNetworkReply*)), this, SLOT(checkFiles(QNetworkReply*)));
+        //go to files checking and download
     }else{
         uiEnabled(true);
         status(rp);

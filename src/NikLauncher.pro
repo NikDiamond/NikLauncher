@@ -18,14 +18,18 @@ SOURCES += main.cpp\
     reg.cpp \
     mdparser.cpp \
     settings.cpp \
-    downloader.cpp
+    downloader.cpp \
+    checker.cpp \
+    minecraft.cpp
 
 HEADERS  += mainclass.h \
     connecter.h \
     reg.h \
     mdparser.h \
     settings.h \
-    downloader.h
+    downloader.h \
+    checker.h \
+    minecraft.h
 
 FORMS    += mainclass.ui \
     reg.ui

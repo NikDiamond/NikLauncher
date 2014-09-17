@@ -48,11 +48,17 @@ private slots:
 
     void serversWrite(QNetworkReply *rep);
 
+    void checkFiles(QNetworkReply *rep);
+
+    void downloadClient(QString newList);
+
     void downloadError();
 
-    void downloadProgress(qint64 r, qint64 t);
+    void downloadProgress(qint64 r);
 
     void clientDownloaded();
+
+    void downloadStart(QNetworkReply *repl);
 
 private:
     Ui::MainClass *ui;
@@ -61,6 +67,15 @@ private:
 
     QString serverChoosed;
     QString clientFilePath;
+    qint64 totalDownSize;
+    QString filesList;
+    qint64 prevR;
+
+    QString login;
+    QString pass;
+    QString access;
+    QString serverIp;
+    QString serverPort;
 };
 
 #endif // MAINCLASS_H

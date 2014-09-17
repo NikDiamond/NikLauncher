@@ -27,6 +27,7 @@ public:
 
     void append(const QUrl &url);
     void append(const QStringList &urlList);
+    void checkPath(QString path);
 private:
     QUrl url;
     QString filePath;
@@ -42,6 +43,7 @@ private:
     QQueue<QUrl> downloadQueue;
     QTime downloadTime;
 
+    qint64 totalSize;
     int downloadedCount;
     int totalCount;
 private slots:

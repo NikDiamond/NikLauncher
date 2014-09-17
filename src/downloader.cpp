@@ -7,13 +7,10 @@ downloader::downloader(QString sc, QObject *parent) :
     totalCount = 0;
     count = 0;
     serverChoosed = sc;
+
     url = "http://"+sett.domain+"/"+sett.pathOnSite;
+
     filePath = sett.globalPath;
-
-    file = new QFile(filePath);
-    if(!file->open(QIODevice::WriteOnly))
-        emit downError();
-
     manager = new QNetworkAccessManager(this);
     currentDownload = manager->get(QNetworkRequest(url));
 }
@@ -55,10 +52,7 @@ void downloader::tstartNextDownload()
     QString downPath = sett.globalPath + serverChoosed + "/" + paths[count];
 
     QDir downDir = QFileInfo(downPath).absoluteDir();
-    if(!downDir.exists()){//Создаём папку для файла, если её нет
-        downDir.mkdir(downDir.absolutePath());
-        qDebug() << "Path " << downDir.absolutePath() << " created!";
-    }
+    downDir.mkpath(downDir.absolutePath());
 
     file = new QFile(downPath);
     if(!file->open(QIODevice::WriteOnly)){
