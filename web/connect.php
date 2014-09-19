@@ -1,5 +1,9 @@
 <?php
 if($app != true) die('403 Forbid_dbden');
+	ini_set('error_reporting', E_ALL);
+	ini_set('display_errors', 1);
+	ini_set('display_startup_errors', 1);
+	
 	$base = 'niklauncher';   //База данных
 	$charset = 'utf8'; //Кодировка вывода из базы
 	$host = 'localhost'; //Хост

@@ -19,7 +19,7 @@ void reg::setUi()
 {
     setLayout(ui->regLayout);
     ui->regWrap->setObjectName("regWindow");
-    ui->regWrap->setStyleSheet("#regWindow{background: transparent;}");
+    ui->regWrap->setStyleSheet("#regWindow{background: url(:/img/images/regBack.png);}");
     ui->regWrap->setMaximumSize(maximumWidth(),maximumHeight());
     ui->regWrap->setMinimumSize(maximumWidth(),maximumHeight());
 
@@ -36,6 +36,7 @@ void reg::error(QString err)
 void reg::on_toBack_clicked()
 {
     this->hide();
+    emit closed();
     this->deleteLater();
 }
 

@@ -14,6 +14,7 @@
 #include <QDir>
 #include <QByteArray>
 #include "settings.h"
+#include "downloader.h"
 
 namespace Ui {
 class MainClass;
@@ -39,27 +40,19 @@ public:
     void startGame();
     void uiEnabled(bool stat);
 private slots:
+    void clientNotFound();
     void on_toGame_clicked();
     void startUserParsing(QNetworkReply *rep);
-
     void on_toReg_clicked();
-
     void on_toClose_clicked();
-
     void serversWrite(QNetworkReply *rep);
-
     void checkFiles(QNetworkReply *rep);
-
     void downloadClient(QString newList);
-
     void downloadError();
-
     void downloadProgress(qint64 r);
-
     void clientDownloaded();
-
     void downloadStart(QNetworkReply *repl);
-
+    void showUi();
 private:
     Ui::MainClass *ui;
     QPoint mpos;
@@ -70,6 +63,7 @@ private:
     qint64 totalDownSize;
     QString filesList;
     qint64 prevR;
+    downloader *downClient;
 
     QString login;
     QString pass;

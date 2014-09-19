@@ -1,5 +1,13 @@
 <RCC>
     <qresource prefix="/img">
         <file>images/mainBack.png</file>
+        <file>images/close.png</file>
+        <file>images/close-hover.png</file>
+        <file>images/input.png</file>
+        <file>images/combobox.png</file>
+        <file>images/button.png</file>
+        <file>images/button-hover.png</file>
+        <file>images/input-active.png</file>
+        <file>images/regBack.png</file>
     </qresource>
 </RCC>

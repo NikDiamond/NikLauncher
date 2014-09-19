@@ -14,9 +14,9 @@ public:
     void launch();
 
 signals:
-
+    void started();
 public slots:
-
+    void startedSlot();
 private:
     QProcess *proc;
     QString serverChoosen;

@@ -16,6 +16,7 @@ public:
     QString launcherName;
     QString globalPath;
     QString pathOnSite;
+    QString javaPath;
     QMap<int, QStringList> serversList;
 };
 

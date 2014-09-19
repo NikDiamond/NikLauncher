@@ -30,7 +30,85 @@
    <bool>true</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QLabel{color:#fff;font-weight:bold;font-size: 16px;}</string>
+   <string notr="true">QLabel{
+	color:#e4e4e4;
+	font-weight:bold;
+	font-size: 21,3px;
+	font-weight: bold;
+	text-align: center;
+}
+QLabel#label_3{
+	font-size: 23px;
+}
+QLineEdit{
+	background: url(:/img/images/input.png) repeat-x;
+	width: 152px;
+	height: 22px;
+	border: none;
+	color: #e4e4e4;
+	padding: 4px;
+	opacity: 0.5;
+}
+QLineEdit:focus{
+	background: url(:/img/images/input-active.png) repeat-x;
+}
+QPushButton{
+	background: url(:/img/images/button.png) repeat-x;
+	width: 78px;
+	height: 28px;
+	border: 1px solid #666;
+	color: #e4e4e4;
+}
+QPushButton#toGame{
+	width: 68px;
+}
+QPushButton:hover{
+	background: url(:/img/images/button-hover.png) repeat-x;
+}
+
+QComboBox {
+	color: #e4e4e4;
+    border: none;
+    padding: 0;
+	min-width: 148px;
+	height: 20px;
+	text-align: center;
+	padding-left: 10px;
+ }
+
+QComboBox QLineEdit{
+	text-align: center;
+}
+
+ QComboBox:editable {
+     background: black;
+ }
+
+ QComboBox:!editable, QComboBox::drop-down:editable {
+     
+	background-image: url(:/img/images/combobox.png);
+ }
+
+ /* QComboBox gets the &quot;on&quot; state when the popup is open */
+ QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+
+ }
+
+ QComboBox:on { /* shift the text when the popup opens */
+ }
+
+ QComboBox::drop-down {
+    width: 0;
+	border: none;
+ }
+
+ QComboBox::down-arrow {
+	width: 0;
+    image: none;
+ }
+
+ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+ }</string>
   </property>
   <property name="windowFilePath">
    <string/>
@@ -40,7 +118,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>801</width>
+     <width>821</width>
      <height>451</height>
     </rect>
    </property>
@@ -63,7 +141,7 @@
        <number>7</number>
       </property>
       <property name="topMargin">
-       <number>7</number>
+       <number>15</number>
       </property>
       <property name="rightMargin">
        <number>7</number>
@@ -96,14 +174,35 @@
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
-         <string notr="true">color:#f00;</string>
+         <string notr="true">QPushButton{
+	background: url(:/img/images/close.png);
+	width: 40px;
+	height: 20px;
+	border: none;
+}
+QPushButton:hover:!pressed{
+	background: url(:/img/images/close-hover.png);
+}</string>
         </property>
         <property name="text">
-         <string>X</string>
+         <string/>
         </property>
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -115,9 +214,12 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
+          <width>520</width>
           <height>20</height>
          </size>
         </property>
@@ -125,19 +227,32 @@
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>10</number>
+        </property>
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <property name="leftMargin">
-         <number>30</number>
+         <number>10</number>
         </property>
         <property name="rightMargin">
-         <number>30</number>
+         <number>20</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
         </property>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
            <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <pointsize>-1</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Авторизация</string>
             </property>
@@ -149,22 +264,16 @@
          </layout>
         </item>
         <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QLabel" name="label">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Логин:</string>
             </property>
@@ -173,16 +282,25 @@
           <item>
            <widget class="QLineEdit" name="loginField">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>160</horstretch>
+              <verstretch>30</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>11</pointsize>
+             </font>
             </property>
             <property name="layoutDirection">
              <enum>Qt::RightToLeft</enum>
             </property>
             <property name="styleSheet">
              <string notr="true"/>
+            </property>
+            <property name="text">
+             <string/>
             </property>
             <property name="echoMode">
              <enum>QLineEdit::Normal</enum>
@@ -195,6 +313,13 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string>Пароль:</string>
             </property>
@@ -203,10 +328,16 @@
           <item>
            <widget class="QLineEdit" name="passField">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>160</horstretch>
+              <verstretch>30</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>11</pointsize>
+             </font>
             </property>
             <property name="layoutDirection">
              <enum>Qt::RightToLeft</enum>
@@ -220,13 +351,13 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="spacing">
+           <number>10</number>
+          </property>
           <item>
-           <spacer name="horizontalSpacer">
+           <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Minimum</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -237,19 +368,77 @@
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="comboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>160</horstretch>
+              <verstretch>20</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="editable">
+             <bool>false</bool>
+            </property>
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+            </property>
+            <property name="minimumContentsLength">
+             <number>0</number>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="spacing">
+           <number>10</number>
+          </property>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item>
            <widget class="QPushButton" name="toGame">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>70</horstretch>
+              <verstretch>30</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>12</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
             </property>
             <property name="cursor">
              <cursorShape>PointingHandCursor</cursorShape>
@@ -264,14 +453,28 @@
           </item>
           <item>
            <widget class="QPushButton" name="toReg">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>80</horstretch>
+              <verstretch>30</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Tahoma</family>
+              <pointsize>8</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
             </property>
             <property name="cursor">
              <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Регистрация</string>
@@ -285,14 +488,17 @@
      </layout>
     </item>
     <item>
-     <spacer name="verticalSpacer">
+     <spacer name="verticalSpacer_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>40</height>
+        <height>50</height>
        </size>
       </property>
      </spacer>
@@ -359,7 +565,6 @@ background: qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #232222, sto
   <tabstop>loginField</tabstop>
   <tabstop>passField</tabstop>
   <tabstop>toGame</tabstop>
-  <tabstop>comboBox</tabstop>
   <tabstop>toReg</tabstop>
   <tabstop>toClose</tabstop>
  </tabstops>

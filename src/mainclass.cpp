@@ -39,6 +39,7 @@ void MainClass::startGame()
     //Запуск игры
     status("Запуск игры...");
     minecraft *game = new minecraft(serverChoosed, login, pass, access, serverIp, serverPort);
+    connect(game, SIGNAL(started()), this, SLOT(close()));
     game->launch();
 }
 
@@ -74,6 +75,7 @@ void MainClass::setUi(){
     pal.setBrush(QPalette::Window, QBrush(QPixmap( ":/img/images/mainBack.png")));
     setPalette(pal);
     setWindowFlags(Qt::FramelessWindowHint);
+
 
     connect(ui->loginField, SIGNAL(returnPressed()), ui->toGame, SLOT(click()));
     connect(ui->passField, SIGNAL(returnPressed()), ui->toGame, SLOT(click()));
@@ -134,35 +136,50 @@ void MainClass::checkFiles(QNetworkReply *rep)
 {
     filesList = rep->readAll();
     //check if download needable
-    status("Проверка файлов...");
     checker *chckFiles = new checker(serverChoosed, filesList);
     connect(chckFiles, SIGNAL(finished(QString)), this, SLOT(downloadClient(QString)));
+    connect(chckFiles, SIGNAL(clientNotFound()), this, SLOT(clientNotFound()));
+}
+
+void MainClass::clientNotFound(){
+    status("Клиент не найден! (Ошибка сервера)");
+    uiEnabled(true);
 }
 
 void MainClass::downloadClient(QString newList)
 {
     filesList = newList;
-    qDebug() << filesList;
     totalDownSize = 0;
 
     connecter *connT = new connecter("launcher.php");
-    connT->doConnect("act=filesSize&server=" + serverChoosed + "&files="+filesList);
+    connT->doConnect("act=filesSize&server=" + serverChoosed + "&files=" + filesList);
     connect(connT, SIGNAL(ready(QNetworkReply*)), this, SLOT(downloadStart(QNetworkReply*)));
 }
 
 void MainClass::downloadStart(QNetworkReply *repl)
 {
     status("Скачивание клиента...");
-    totalDownSize = repl->readAll().toLongLong();
-    qDebug() << "Total size: " << totalDownSize;
-    QStringList list = filesList.simplified().split(",");
+    QString rp = repl->readAll();
 
-    downloader *downClient = new downloader(serverChoosed);
+    totalDownSize = rp.toLongLong();
+    qDebug() << "Total size: " << totalDownSize;
+    if(totalDownSize == 0)
+        qDebug() << rp.toInt() << " or " << rp;
+
+    QStringList list = filesList.simplified().split(",");
+    qDebug() << list;
+
+    downClient = new downloader(serverChoosed);
     downClient->append(list);
 
     prevR = 0;
     connect(downClient, SIGNAL(finished()), this, SLOT(clientDownloaded()));
     connect(downClient, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgress(qint64)));
+}
+
+void MainClass::showUi()
+{
+    uiEnabled(true);
 }
 
 void MainClass::downloadError()
@@ -186,16 +203,20 @@ void MainClass::downloadProgress(qint64 r)
     status(received.left(received.indexOf(received.right(3))) + " " + received.right(3) +" / "+ total.left(total.indexOf(total.right(3))) + " " + total.right(3) +" KB");
 
     prevR = r;
+    ui->downProgress->repaint();
 }
 
 void MainClass::clientDownloaded()
 {
+    prevR = 0;
+    downClient->deleteLater();
     status("Клиент скачан!");
     startGame();
 }
 
 void MainClass::on_toGame_clicked()
 {
+    ui->downProgress->setValue(0);
     QString login = ui->loginField->text().simplified();
     QString pass = ui->passField->text().simplified();
 
@@ -214,12 +235,11 @@ void MainClass::startUserParsing(QNetworkReply *rep)
     QString rp = rep->readAll();
     qDebug() << rp;
 
-    QStringList loginData = rp.split("<>");
-    login = loginData[1];
-    access = loginData[2];
-    pass = loginData[0];
-
     if(rp.contains("<>")){
+        QStringList loginData = rp.split("<>");
+        login = loginData[1];
+        access = loginData[2];
+        pass = loginData[0];
         serverChoosed = ui->comboBox->currentText();
 
         QStringList serverNow;
@@ -235,7 +255,7 @@ void MainClass::startUserParsing(QNetworkReply *rep)
         serverIp = serverNow[1];
         serverPort = serverNow[2];
 
-        status("Поиск клиента...");
+        status("Проверка файлов...");
         checkPath();
         checkPath("/" + serverChoosed);;
 
@@ -246,15 +266,18 @@ void MainClass::startUserParsing(QNetworkReply *rep)
     }else{
         uiEnabled(true);
         status(rp);
+        return;
     }
 }
 
 void MainClass::on_toReg_clicked()
 {
     reg *regForm = new reg(this);
-    regForm->setGeometry(10,70,0,0);
-    regForm->setMaximumSize(480,420);
-    regForm->setMinimumSize(480,420);
+    connect(regForm, SIGNAL(closed()), this, SLOT(showUi()));
+    regForm->setGeometry(20,80,0,0);
+    regForm->setMaximumSize(460,360);
+    regForm->setMinimumSize(460,360);
+    uiEnabled(false);
     regForm->show();
     regForm->setUi();
 }

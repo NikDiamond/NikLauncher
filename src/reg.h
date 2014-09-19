@@ -27,6 +27,8 @@ private:
     Ui::reg *ui;
 private slots:
     void replyReady(QNetworkReply *rep);
+signals:
+    void closed();
 };
 
 #endif // REG_H
